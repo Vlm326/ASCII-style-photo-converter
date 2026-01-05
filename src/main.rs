@@ -32,6 +32,10 @@ fn parse_name(path: &String) -> Result<String, String> {
     let name = path
         .rsplit('/')
         .next()
+        .ok_or_else(|| "empty path".to_string())?
+        .rsplit(".")
+        .skip(1)
+        .next()
         .ok_or_else(|| "empty path".to_string())?;
     Ok(name.to_string())
 }
@@ -70,10 +74,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Default settings
     let mut cfg = Config {
         cols: 220,
-        font_path: "/home/vlm326/.local/share/fonts/JetBrainsMonoNLNerdFont-Regular.ttf".to_string(),
+        font_path: "/home/vlm326/.local/share/fonts/JetBrainsMonoNLNerdFont-Regular.ttf"
+            .to_string(),
         font_px: 14.0,
         out_path: format!("./{file_name}_ascii.png").to_string(),
-        charset: " .,:;i1tfLCG08@".to_string(),
+        charset: " .'`^\",:;Il!i><~+_-?][}{1)(|\\/*tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
+            .to_string(),
     };
 
     for opt in settings.iter() {
@@ -82,9 +88,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "cols" => cfg.cols = val.parse()?,
                 "font" => cfg.font_path = val.to_string(),
                 "font_px" => cfg.font_px = val.parse()?,
-                "out_name" => {
-                    cfg.out_path = format!("./{}_ascii.png", val.to_string()).to_string()
-                }
+                "out_name" => cfg.out_path = format!("./{}_ascii.png", val.to_string()).to_string(),
                 "charset" => cfg.charset = val.to_string(),
                 "def" => break,
                 _ => eprintln!("Unsupported setting: {name}"),
