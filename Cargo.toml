@@ -1,0 +1,8 @@
+[package]
+name = "ASCII_photo_converter"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+image = "0.25.9"
+ab_glyph = "0.2"
