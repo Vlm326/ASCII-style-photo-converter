@@ -9,7 +9,7 @@ fn luma01(r: f32, g: f32, b: f32) -> f32 {
 }
 
 fn blend_over(dst: &mut Rgba<u8>, src_rgb: [u8; 3], alpha: f32) {
-    let a = alpha.clamp(0.0, 1.0);
+    let a = (alpha * 2.5).clamp(0.0, 1.0);
     let inv = 1.0 - a;
 
     dst.0[0] = (dst.0[0] as f32 * inv + src_rgb[0] as f32 * a) as u8;
@@ -17,6 +17,9 @@ fn blend_over(dst: &mut Rgba<u8>, src_rgb: [u8; 3], alpha: f32) {
     dst.0[2] = (dst.0[2] as f32 * inv + src_rgb[2] as f32 * a) as u8;
     dst.0[3] = 255;
 }
+
+
+
 
 pub fn convert_simple(
     img: &DynamicImage,
@@ -72,16 +75,16 @@ pub fn convert_simple(
 
             let bg = Rgba([sr as u8, sg as u8, sb as u8, 255]);
 
-let x_out0 = col * advance_x;
-let y_out0 = row * line_h;
-let x_out1 = (x_out0 + advance_x).min(out_w);
-let y_out1 = (y_out0 + line_h).min(out_h);
+            let x_out0 = col * advance_x;
+            let y_out0 = row * line_h;
+            let x_out1 = (x_out0 + advance_x).min(out_w);
+            let y_out1 = (y_out0 + line_h).min(out_h);
 
-for yy in y_out0..y_out1 {
-    for xx in x_out0..x_out1 {
-        *out.get_pixel_mut(xx, yy) = bg;
-    }
-}
+            for yy in y_out0..y_out1 {
+                for xx in x_out0..x_out1 {
+                    *out.get_pixel_mut(xx, yy) = bg;
+                }
+            }
 
             for yy in y0..y1 {
                 for xx in x0..x1 {
@@ -103,8 +106,6 @@ for yy in y_out0..y_out1 {
             let px = (col * advance_x) as f32;
             let py = (row * line_h) as f32 + ascent as f32;
 
-            let mut glyph = scaled.scaled_glyph(ch);
-            glyph.position = ab_glyph::point(px, py);
 
             let color = [sr as u8, sg as u8, sb as u8];
             let mut glyph = scaled.scaled_glyph(ch);
