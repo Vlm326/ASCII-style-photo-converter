@@ -23,38 +23,43 @@ print("Project build succesefully")
 folder = pb.Path(os.path.dirname(__file__))
 root_project_dir = os.path.dirname(os.path.dirname(__file__))
 
-username = subprocess.check_output(["whoami"], text=True).strip()
-font_path = f"/home/{username}/.local/share/"
-font_folder = pb.Path(font_path)
+print("Do you wnat to auto install base font in settings?")
+ans = input("y/n: ")
+if ans == "y":
+    username = subprocess.check_output(["whoami"], text=True).strip()
+    main_rs = os.path.join(root_project_dir, "src", "main.rs")
 
-font_files = [file for file in folder.iterdir() if file.is_file()]
+    old = 'font_path: "/home/vlm326/.local/share/fonts/JetBrainsMonoNLNerdFont-Regular.ttf"'
 
-new_font_path = ""
-for file in font_files:
-    if "mono" in file or "Mono" in file:
-        new_font_path = os.path.join(font_folder, file)
-        break
+    font_path = f"/home/{username}/.local/share/fonts"
+    font_folder = pb.Path(font_path)
 
-if new_font_path == "":
-    print("Please install monospace font, they're better then regular once :)")
-    exit()
+    font_files = [file for file in folder.iterdir() if file.is_file()]
 
+    new_font_path = ""
+    for file in font_files:
+        if "mono" in str(file) or "Mono" in str(file):
+            new_font_path = os.path.join(font_folder, file)
+            break
 
-main_rs = os.path.join(root_project_dir, "src", "main.rs")
+    if new_font_path == "":
+        print("Please install monospace font, they're better then regular once :)")
+        exit()
 
-old = 'font_path: "/home/vlm326/.local/share/fonts/JetBrainsMonoNLNerdFont-Regular.ttf"'
-new = f'font_path: "{new_font_path}"'
+    new = f'font_path: "{new_font_path}"'
 
-with open(main_rs, "r", encoding="utf-8") as f:
-    text = f.read()
+    with open(main_rs, "r", encoding="utf-8") as f:
+        text = f.read()
 
-if old not in text:
-    print("How?")
-else:
-    text = text.replace(old, new, 1)
-    with open(main_rs, "w", encoding="utf-8") as f:
-        f.write(text)
-    print("Alright, font is changed font_path")
+    if old not in text:
+        print("How?")
+    else:
+        text = text.replace(old, new, 1)
+        with open(main_rs, "w", encoding="utf-8") as f:
+            f.write(text)
+        print("Alright, font is changed font_path")
+else: 
+    print("Ok then write font path by youself in main.rs")
 
 
 files = [file for file in folder.iterdir() if file.is_file()]

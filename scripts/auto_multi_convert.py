@@ -22,7 +22,6 @@ for file in files:
     command = f"./target/release/ASCII_photo_converter {os.path.join(folder, file)} --out_name=./out/{file.split(".")[0]} "
     if len(settings) != 0:
         for opt in settings:
-            
             command += f"--{opt} " 
     print(command)
     os.system(f"{command}")
