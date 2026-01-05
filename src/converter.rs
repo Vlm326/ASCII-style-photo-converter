@@ -1,6 +1,7 @@
 use crate::{Config, letter_pool};
 use ab_glyph::{Font, FontRef, PxScale, ScaleFont};
 use image::{DynamicImage, GenericImageView, ImageBuffer, Rgba};
+use std::io::{self, Write};
 
 fn luma01(r: f32, g: f32, b: f32) -> f32 {
     // 0..1
@@ -17,9 +18,6 @@ fn blend_over(dst: &mut Rgba<u8>, src_rgb: [u8; 3], alpha: f32) {
     dst.0[2] = (dst.0[2] as f32 * inv + src_rgb[2] as f32 * a) as u8;
     dst.0[3] = 255;
 }
-
-
-
 
 pub fn convert_simple(
     img: &DynamicImage,
@@ -55,6 +53,9 @@ pub fn convert_simple(
     let out_w = cols * advance_x;
     let out_h = rows * line_h;
     let mut out = ImageBuffer::from_pixel(out_w, out_h, Rgba([0, 0, 0, 255]));
+
+    let total = rows as usize;
+    let width = 20;
 
     for row in 0..rows {
         for col in 0..cols {
@@ -106,7 +107,6 @@ pub fn convert_simple(
             let px = (col * advance_x) as f32;
             let py = (row * line_h) as f32 + ascent as f32;
 
-
             let color = [sr as u8, sg as u8, sb as u8];
             let mut glyph = scaled.scaled_glyph(ch);
             glyph.position = ab_glyph::point(px, py);
@@ -125,7 +125,20 @@ pub fn convert_simple(
                 });
             }
         }
+
+        let done = (row as usize + 1) * width / total;
+        let bar = format!(
+            "[{:<width$}] {}/{}",
+            "#".repeat(done),
+            row + 1,
+            rows,
+            width = width
+        );
+
+        print!("\r{}", bar);
+        io::stdout().flush().ok();
     }
+    println!();
 
     Ok(out)
 }
