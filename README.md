@@ -107,11 +107,11 @@ ASCII-style-photo-converter/
 
 ## Лицензия
 
-Apache-2.0 — делай что хочешь, но помни про авторов.
+См LICENSE
 
 ## Контакты
 
-Нашёл баг или есть идеи? Открывай [issue](https://github.com/Vlm326/ASCII-style-photo-converter/issues) или делай pull request!
+Нашёл баг или есть идеи? [issue](https://github.com/Vlm326/ASCII-style-photo-converter/issues) или делай PR
 
 ---
 
