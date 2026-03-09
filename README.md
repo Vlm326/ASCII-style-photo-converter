@@ -1,4 +1,11 @@
 # ASCII Style Photo Converter 🦀
+![CI](https://github.com/Vlm326/ASCII-style-photo-converter/actions/workflows/ci.yml/badge.svg)
+![License](https://img.shields.io/github/license/Vlm326/ASCII-style-photo-converter)
+![Issues](https://img.shields.io/github/issues/Vlm326/ASCII-style-photo-converter)
+![PRs](https://img.shields.io/github/issues-pr/Vlm326/ASCII-style-photo-converter)
+![Stars](https://img.shields.io/github/stars/Vlm326/ASCII-style-photo-converter)
+
+
 
 Конвертер изображений в ASCII-арт на Rust. Превращает обычные фотографии в стильные текстовые рисунки, которые можно сохранить в файл.
 
