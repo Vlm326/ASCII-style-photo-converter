@@ -113,6 +113,7 @@ pub fn convert_simple(
 
             if let Some(outlined) = scaled.outline_glyph(glyph) {
                 let bounds = outlined.px_bounds(); // где этот глиф реально лежит в пикселях
+                //println!("{}: bounds={:?} advance_x={} line_h={}", ch, bounds, advance_x, line_h);
                 outlined.draw(|gx, gy, cov| {
                     // gx,gy идут ОТНОСИТЕЛЬНО bounds.min
                     let ox = bounds.min.x.floor() as i32 + gx as i32;

@@ -1,123 +1,136 @@
-# ASCII Style Photo Converter 🦀
-![CI](https://github.com/Vlm326/ASCII-style-photo-converter/actions/workflows/ci.yml/badge.svg)
-![License](https://img.shields.io/github/license/Vlm326/ASCII-style-photo-converter)
-![Issues](https://img.shields.io/github/issues/Vlm326/ASCII-style-photo-converter)
-![PRs](https://img.shields.io/github/issues-pr/Vlm326/ASCII-style-photo-converter)
-![Stars](https://img.shields.io/github/stars/Vlm326/ASCII-style-photo-converter)
+# ASCII_photo_converter 🦀
 
+[![CI](https://github.com/Vlm326/ASCII-style-photo-converter/actions/workflows/rust.yml/badge.svg)](https://github.com/Vlm326/ASCII-style-photo-converter/actions/workflows/rust.yml)
+[![License](https://img.shields.io/github/license/Vlm326/ASCII-style-photo-converter)](LICENSE)
 
-Конвертер изображений в ASCII-арт на Rust. Превращает обычные фотографии в стильные текстовые рисунки, которые можно сохранить в файл.
+A fast Rust CLI tool that converts photographs into ASCII-art images. Each grid cell of the source image is replaced by a rendered glyph chosen from a configurable character set, colored with the average color of that region. The result is a pixel-art-like PNG made of letters and symbols.
 
-## Что это вообще такое?
+## Features
 
-Простая утилита, которая берёт твою картинку и преобразует её в набор ASCII символов. Получается что-то вроде пиксель-арта, только из букв и знаков. Выглядит круто, особенно если правильно подобрать размеры.
+- Converts a wide range of image formats (PNG, JPG, GIF, TIFF, WebP, AVIF, and more).
+- Configurable output resolution (`cols`) with aspect-ratio-preserving row calculation.
+- Customizable character set and glyph font.
+- Renders each glyph in its local region color for a rich, photo-realistic result.
+- Simple command-line interface with optional interactive prompts.
+- Batch conversion helper script included.
 
-## Возможности
+## Requirements
 
--  Конвертация изображений разных форматов (PNG, JPG, и т.д.)
--  Настройка размеров выходного ASCII-арта
--  BLAZING работа благодаря Rust
--  Простой интерфейс командной строки
+- [Rust](https://rustup.rs/) (edition 2024)
+- A monospace TTF font installed on the system (see [Font setup](#font-setup)).
+- Python 3.x (optional, only for the helper scripts).
 
-## Требования
+## Installation
 
-Для сборки и запуска понадобится:
-- Rust (установи через [rustup](https://rustup.rs/))
-- Python 3.x (если будешь использовать скрипт для сборки)
-- Cargo (идёт вместе с Rust)
-
-## Установка
-
-### Вариант 1: Сборка руками (классика)
+Clone the repository and build:
 
 ```bash
-# Клонируй репозиторий
 git clone https://github.com/Vlm326/ASCII-style-photo-converter.git
-cd ASCII-style-photo-converter
+cd ASCII_photo_converter
 
-# Собери проект
 cargo build --release
-
-# Готово! Бинарник будет в target/release/
 ```
 
-### Вариант 2: Python скрипт (для ленивых)
+The binary will be produced at `target/release/ASCII_photo_converter`.
 
-Если не хочешь заморачиваться, есть готовый Python скрипт в папке `scripts/`:
+## Usage
+
+```
+ASCII_photo_converter <path> [--key=value ...]
+```
+
+If no path is provided, the tool asks for one interactively. If no options are
+given, it prompts for settings — type `def` to use the defaults.
+
+### Basic example
 
 ```bash
-# Запусти скрипт сборки
-python scripts/build.py
-
-# Или если у тебя только python3:
-python3 scripts/build.py
+./target/release/ASCII_photo_converter exemple.jpg
 ```
 
-Скрипт сам всё соберёт и подготовит.
+By default this writes `exemple_ascii.png` in the current directory.
 
-## Использование
+### Options
 
-### Базовый пример
+| Option     | Default                                                                    | Description                                                                                              |
+|------------|----------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| `cols`     | `220`                                                                      | Number of output columns. Rows are derived proportionally. Higher values give more detail but look darker. |
+| `charset`  | a long luminance ramp of printable ASCII + block glyphs                   | The character pool used to map luminance.                                                               |
+| `font`     | a hardcoded path to a JetBrains Mono Nerd Font                            | Path to the TTF font used for rendering.                                                               |
+| `font_px`  | `14.0`                                                                     | Font pixel size.                                                                                          |
+| `out_name` | `./<input-base-name>_ascii.png`                                            | Base output name. The `_ascii.png` suffix is always appended.                                             |
+
+### Examples
 
 ```bash
-# Конвертируй картинку
-./target/release/ascii-style-photo-converter path/to/your/image.jpg
-
-# Или из корневой директории в режиме разработки:
-cargo run path/to/your/image.jpg
+# 100 columns, a custom charset, and a custom output name
+./target/release/ASCII_photo_converter exemple.jpg \
+  --cols=100 \
+  --charset=" 90#M%@" \
+  --out_name=my_art
+# -> my_art_ascii.png
 ```
-
-### Опции 
 
 ```bash
-# Задать качество выходного изображения
-ascii-style-photo-converter image.jpg --cols=100
-# Использовать разные наборы символов
-ascii-style-photo-converter image.jpg --charset="asdfsd"
+# Specify a font explicitly
+./target/release/ASCII_photo_converter image.png --font=/path/to/Mono.ttf
 ```
 
-## Примеры результатов
- - оригинал
-<img width="300" height="900" alt="test_cols=100_ascii" src="https://github.com/user-attachments/assets/9e05edf0-b539-4680-a102-053b70e150a7" />
+### Font setup
 
- - cols=100
+By default `font` points to a Linux-specific path that only exists on the
+author's machine. On any other system, either:
 
-<img width="300" height="900" alt="test_cols=100_ascii" src="https://github.com/user-attachments/assets/a0f7a980-0ce5-4797-af00-23d997c54ebe" />
+- pass `--font=/path/to/your.ttf` on every run, or
+- edit the default path in `src/main.rs` before building.
 
- - cols=220
+### Interactive mode
 
-<img width="300" height="900" alt="test_cols=220_ascii" src="https://github.com/user-attachments/assets/30d6a381-99ff-4464-bdcc-d8368edd81b8" />
-
-больше примеров с примерами настроек в папке exemples
-
-## Небольшое руководство использования 
-Для ярких изображений стоит испольховать более "грубые" пулы символов, стандартные настройки более плавные, но светлые фото превращаются в очень темные, примером неплохого чарсета может послужить " 90#M%@"
-но стоит поэксперементирвоать самим.
-cols - отвечают за расширение, вы пишете количество столбцов, котоыре хотите видеть (просто абстрактная величина по факту), и по формуле вычисляется разрешение фото, чем больше разрешение тем более детально, но темнее скорее всего будет
-charset - при запуске можно поменять пул символов
-out_name - имя файла после конфертации
-font - возможны проблемы, по умолчанию стоит путь в линукс, если иная система то в файле main.rs надо поменять путь, или при каждом запуске руками прописывать путь
-
-
-## Структура проекта
-
-```
-ASCII-style-photo-converter/
-├── src/                # Исходники на Rust
-├── scripts/            # Python скрипты для автоматизации
-├── Cargo.toml          # Конфигурация Rust проекта
-└── .github/workflows/  # CI/CD конфигурация
+```bash
+./target/release/ASCII_photo_converter
+# Enter path to file: exemple.jpg
+# Enter settings or enter def if you want default: def
 ```
 
-`
+## Helper scripts
 
-## Лицензия
+- `scripts/build.py` — builds the project and can rewrite the default font path in `src/main.rs` to your local monospace font.
+- `scripts/auto_multi_convert.py` — batch-converts every file placed in the `convert/` folder, applying shared settings, and writes outputs to `out/`.
 
-См LICENSE
+## Tips
 
-## Контакты
+- For bright images, prefer a coarse character set (e.g. `" 90#M%@"`), because the default settings are tuned for darker images and may render light photos too dark.
+- More `cols` means sharper detail but tends to produce darker output — experiment to find the sweet spot.
 
-Нашёл баг или есть идеи? [issue](https://github.com/Vlm326/ASCII-style-photo-converter/issues) или делай PR
+## Examples
 
----
+Original image and outputs at different `cols` values (uploaded to the repo's release assets) are shown in the [examples](#examples) section of the project. Additional samples with various settings live in the `exemples/` folder.
 
+## Project structure
+
+```
+ASCII_photo_converter/
+├── src/                  # Rust sources
+│   ├── main.rs           # CLI entry point, option parsing, config
+│   ├── converter.rs      # Core conversion algorithm
+│   └── letter_pool.rs    # Luminance → character mapping
+├── scripts/              # Python helper scripts
+├── convert/              # Staging folder for batch conversion
+├── out/                  # Batch conversion outputs
+├── exemples/             # Sample inputs and outputs
+├── Cargo.toml            # Rust project configuration
+└── .github/workflows/    # CI configuration
+```
+
+## CI
+
+A GitHub Actions workflow (`rust.yml`) builds the project with `--locked` on
+`ubuntu-latest` for every push and pull request to `main`.
+
+## License
+
+[Apache 2.0](LICENSE)
+
+## Contributing
+
+Found a bug or have an idea? Open an [issue](https://github.com/Vlm326/ASCII-style-photo-converter/issues) or submit a pull request.
